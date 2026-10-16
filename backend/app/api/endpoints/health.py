@@ -1,35 +1,24 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from datetime import datetime, timezone
 from app.models.health import HealthResponse
 from app.core.config import settings
-from datetime import datetime
+from app.services.falkor import FalkorDBService, get_falkor_service
 
 router = APIRouter()
 
 @router.get("/health", response_model=HealthResponse)
-async def get_health():
-    # Attempt minimal FalkorDB check if connection service is available
-    falkor_connected = False
-    node_count = 0
-    try:
-        from falkordb import FalkorDB
-        db = FalkorDB(host=settings.FALKORDB_HOST, port=settings.FALKORDB_PORT, password=settings.FALKORDB_PASSWORD or None)
-        graph = db.select_graph(settings.FALKORDB_GRAPH)
-        res = graph.query("MATCH (n) RETURN count(n) AS c")
-        node_count = res.result_set[0][0] if res.result_set else 0
-        falkor_connected = True
-    except Exception:
-        falkor_connected = False
-
+async def check_health(falkor: FalkorDBService = Depends(get_falkor_service)):
+    is_connected, node_count = await falkor.ping_and_count()
     return HealthResponse(
-        status="healthy" if falkor_connected else "degraded",
+        status="healthy" if is_connected else "degraded",
         version="1.0.0",
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         environment=settings.APP_ENV,
         falkordb={
-            "connected": falkor_connected,
+            "connected": is_connected,
             "host": settings.FALKORDB_HOST,
             "port": settings.FALKORDB_PORT,
             "graph_name": settings.FALKORDB_GRAPH,
-            "total_nodes": node_count
+            "total_nodes": node_count if is_connected else 0
         }
     )

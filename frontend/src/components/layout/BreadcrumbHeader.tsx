@@ -1,6 +1,7 @@
 import React from 'react';
 import { RefreshCw, ExternalLink, Zap, Terminal } from 'lucide-react';
 import { HealthResponse } from '../../api/types';
+import { HealthBadge } from '../HealthBadge';
 
 interface Props {
   health: HealthResponse | null;
@@ -27,11 +28,8 @@ export const BreadcrumbHeader: React.FC<Props> = ({ health, onRefresh }) => {
 
       {/* Action controls */}
       <div className="flex items-center gap-3">
-        {/* Status pill */}
-        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono font-medium border ${health?.status === 'healthy' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border-amber-500/30'}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${health?.status === 'healthy' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-          <span>{health?.status === 'healthy' ? 'FalkorDB Online' : 'Degraded / Reconnecting'}</span>
-        </div>
+        {/* Reusable HealthBadge */}
+        <HealthBadge health={health} onRefresh={onRefresh} />
 
         {/* Refresh button */}
         <button 

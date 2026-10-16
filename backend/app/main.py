@@ -1,12 +1,24 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from app.core.config import settings
+from app.core.logging import setup_logging, get_logger
 from app.api.router import api_router
+
+setup_logging()
+logger = get_logger("company_brain")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(f"Starting Company Brain API in [{settings.APP_ENV}] mode (FalkorDB host: {settings.FALKORDB_HOST}:{settings.FALKORDB_PORT})")
+    yield
+    logger.info("Shutting down Company Brain API")
 
 app = FastAPI(
     title="Company Brain API",
     description="Graph-Native Organizational Intelligence Platform for FalkorDB Graph Hacks 2026",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Configure CORS
