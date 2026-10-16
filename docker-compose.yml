@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. FalkorDB Primary Graph Database
+  # ----------------------------------------------------------------------------
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: company_brain_falkordb
+    ports:
+      - "6379:6379"
+    volumes:
+      - falkordb_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - company_brain_net
+
+  # ----------------------------------------------------------------------------
+  # 2. FastAPI Backend Service
+  # ----------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: company_brain_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=development
+      - FALKORDB_HOST=falkordb
+      - FALKORDB_PORT=6379
+      - FALKORDB_GRAPH=company_brain
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - LLM_MODEL=${LLM_MODEL:-gemini-1.5-flash}
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173
+    volumes:
+      - ./backend:/app
+    depends_on:
+      falkordb:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - company_brain_net
+
+  # ----------------------------------------------------------------------------
+  # 3. React + Vite Frontend UI
+  # ----------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: company_brain_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000/api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - company_brain_net
+
+volumes:
+  falkordb_data:
+
+networks:
+  company_brain_net:
+    driver: bridge

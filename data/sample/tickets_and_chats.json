@@ -1,0 +1,49 @@
+{
+  "company": "Northstar Systems",
+  "generated_for": "FalkorDB Graph Hacks 2026",
+  "tickets": [
+    {
+      "id": "PAY-402",
+      "title": "Migrate payment ledger schema to CockroachDB",
+      "status": "CLOSED",
+      "assignee_id": "sarah-chen",
+      "reporter_id": "elena-rostova",
+      "service_id": "payment-gateway",
+      "created_at": "2026-08-25T11:00:00Z",
+      "resolution_summary": "Completed schema DDL migration and multi-region testing under ADR-004."
+    },
+    {
+      "id": "INFRA-109",
+      "title": "Deploy FalkorDB Docker container for organizational graph context",
+      "status": "RESOLVED",
+      "assignee_id": "alex-rivera",
+      "reporter_id": "alex-rivera",
+      "service_id": "company-brain",
+      "created_at": "2026-10-15T09:30:00Z",
+      "resolution_summary": "FalkorDB cluster deployed on port 6379 with sub-millisecond Cypher query response."
+    }
+  ],
+  "slack_threads": [
+    {
+      "channel": "#core-payments",
+      "thread_ts": "1724164800.001",
+      "messages": [
+        {
+          "sender": "sarah-chen",
+          "text": "Heads up team: ADR-004 has officially been approved by Elena. We are migrating off PostgreSQL to CockroachDB due to multi-region latency requirements.",
+          "timestamp": "2026-08-20T14:40:00Z"
+        },
+        {
+          "sender": "marcus-vance",
+          "text": "Awesome. Will Kafka ingestion into Billing Engine be impacted during the migration window?",
+          "timestamp": "2026-08-20T14:45:00Z"
+        },
+        {
+          "sender": "sarah-chen",
+          "text": "No, Kafka topic contracts remain identical. Zero downtime expected.",
+          "timestamp": "2026-08-20T14:48:00Z"
+        }
+      ]
+    }
+  ]
+}
