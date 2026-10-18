@@ -15,3 +15,13 @@
 ## ADR-04: 6-Factor Composite Freshness & Memory Decay System
 - **Status**: Accepted
 - **Rationale**: Replaces naive TTL with multi-dimensional scoring (age, recency, source authority, connectivity, supersession, and contradictions).
+
+## ADR-05: Pydantic BaseSettings with Dual Path Resolution & Graceful Startup Telemetry
+- **Status**: Accepted
+- **Rationale**: Provides deterministic environment configuration loading whether services are executed from root, backend, or Docker containers. Employs strict Pydantic v2 validation with formatted startup error banners, guarding against invalid ports, invalid environment modes, and illegal chunk configurations.
+
+## ADR-06: FalkorDB Canonical Graph Schema & Parameterized Cypher Service
+- **Status**: Accepted
+- **Rationale**: Implements 11 canonical node types and 13 typed relationships in FalkorDB with universal entity metadata (`freshness_score`, `staleness_status`, `connections_count`). Enforces idempotent upserts using Cypher `MERGE`, strict parameterization via `$params` to eliminate injection vulnerabilities, native unique constraint initialization via `create_node_unique_constraint`, and bounded multi-hop traversals for blast radius and decision supersession lineage.
+
+

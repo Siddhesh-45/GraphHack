@@ -21,11 +21,11 @@ export const App: React.FC = () => {
     getHealth()
       .then(setHealth)
       .catch(() => setHealth({
-        status: 'healthy',
+        status: 'degraded',
         version: '1.0.0',
         timestamp: new Date().toISOString(),
-        environment: 'development',
-        falkordb: { connected: true, host: 'localhost', port: 6379, graph_name: 'company_brain', total_nodes: 8 }
+        environment: 'offline',
+        falkordb: { connected: false, host: 'localhost', port: 6379, graph_name: 'company_brain', total_nodes: 0 }
       }));
   };
 

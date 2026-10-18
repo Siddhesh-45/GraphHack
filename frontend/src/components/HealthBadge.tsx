@@ -31,7 +31,7 @@ export const HealthBadge: React.FC<Props> = ({ health }) => {
         </span>
 
         <span className="font-medium">
-          {isHealthy ? 'FalkorDB Online' : 'FalkorDB Connecting'}
+          {health === null ? 'FalkorDB Connecting...' : isHealthy ? 'FalkorDB Online' : 'FalkorDB Offline'}
         </span>
 
         {falkorConnected && (

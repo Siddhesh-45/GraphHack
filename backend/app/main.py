@@ -11,6 +11,13 @@ logger = get_logger("company_brain")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(f"Starting Company Brain API in [{settings.APP_ENV}] mode (FalkorDB host: {settings.FALKORDB_HOST}:{settings.FALKORDB_PORT})")
+    try:
+        from app.graph.connection import get_graph_connection
+        conn = get_graph_connection()
+        info = conn.init_schema()
+        logger.info(f"FalkorDB schema initialized on '{info['graph']}': {info['total_canonical_labels']} canonical entity constraints checked")
+    except Exception as e:
+        logger.warning(f"FalkorDB schema initialization deferred: {e}")
     yield
     logger.info("Shutting down Company Brain API")
 
